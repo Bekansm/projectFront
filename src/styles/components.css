@@ -58,6 +58,7 @@ ul {
 }
 
 ul li {
+	text-align: start;
 	margin-bottom: 8px;
 	font-size: 16px;
 	line-height: 1.5;
@@ -199,6 +200,10 @@ button:active {
 	max-width: 400px;
 	width: 100%;
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-overlay .modal-content .wrapper-text {
+	text-align: center;
 }
 .modal-buttons {
 	display: flex;

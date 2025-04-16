@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { logout } from "../../redux/slices/authSlice";
+import ConfirmModal from "../../components/ConfirmationModal";
+import { useDispatch } from "react-redux";
 
 export default function Profile() {
+	const dispatch = useDispatch();
+	const [showModal, setShowModal] = useState(false);
 	const [user, setUser] = useState({ name: "", email: "" });
 	const [serverError, setServerError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
@@ -12,6 +17,20 @@ export default function Profile() {
 		reset,
 	} = useForm();
 
+	const handleDeleteClick = (e) => {
+		e.preventDefault();
+		setShowModal(true);
+	};
+
+	const handleConfirm = () => {
+		onDeleteAccount();
+		setShowModal(false);
+		navigate("/");
+	};
+
+	const handleCancel = () => {
+		setShowModal(false);
+	};
 	useEffect(() => {
 		// Загрузка данных пользователя с сервера
 		const token = localStorage.getItem("token");
@@ -59,12 +78,6 @@ export default function Profile() {
 	};
 
 	const onDeleteAccount = async () => {
-		const confirmDelete = window.confirm(
-			"Вы уверены, что хотите удалить аккаунт?"
-		);
-		if (!confirmDelete) return;
-
-		const token = localStorage.getItem("token");
 		try {
 			const res = await fetch("http://localhost:8000/auth/delete", {
 				method: "DELETE",
@@ -77,68 +90,75 @@ export default function Profile() {
 				const result = await res.json();
 				throw new Error(result.message || "Ошибка при удалении аккаунта");
 			}
-
-			localStorage.removeItem("token");
-			window.location.href = "/login";
 		} catch (err) {
 			setServerError(err.message);
 		}
+		dispatch(logout());
 	};
 
 	return (
-		<div className="wrapper">
-			<h2 className="wrapper-text">Профиль</h2>
+		<>
+			<div className="wrapper">
+				<h2 className="wrapper-text">Профиль</h2>
 
-			<div className="profile-info">
-				<p>
-					<strong>Имя:</strong> {user.name}
-				</p>
-				<p>
-					<strong>Email:</strong> {user.email}
-				</p>
+				<div className="profile-info wrapper-text">
+					<p>
+						<strong>Имя:</strong> {user.name}
+					</p>
+					<p>
+						<strong>Email:</strong> {user.email}
+					</p>
+				</div>
+
+				<h3 className="wrapper-text">Сменить пароль</h3>
+				<form onSubmit={handleSubmit(onChangePassword)} className="auth-form">
+					<div>
+						<input
+							type="password"
+							placeholder="Старый пароль"
+							{...register("oldPassword", {
+								required: "Введите старый пароль",
+							})}
+						/>
+						{errors.oldPassword && (
+							<p className="wrapper-text">{errors.oldPassword.message}</p>
+						)}
+					</div>
+					<div>
+						<input
+							type="password"
+							placeholder="Новый пароль"
+							{...register("newPassword", {
+								required: "Введите новый пароль",
+								minLength: {
+									value: 6,
+									message: "Минимум 6 символов",
+								},
+							})}
+						/>
+						{errors.newPassword && (
+							<p className="wrapper-text">{errors.newPassword.message}</p>
+						)}
+					</div>
+					<button type="submit">Сменить пароль</button>
+				</form>
+
+				{successMessage && <p className="wrapper-text">{successMessage}</p>}
+				{serverError && <p className="wrapper-text">{serverError}</p>}
+
+				<hr style={{ margin: "20px 0" }} />
+
+				<button onClick={handleDeleteClick}>Удалить аккаунт</button>
 			</div>
 
-			<h3 className="wrapper-text">Сменить пароль</h3>
-			<form onSubmit={handleSubmit(onChangePassword)} className="auth-form">
-				<div>
-					<input
-						type="password"
-						placeholder="Старый пароль"
-						{...register("oldPassword", {
-							required: "Введите старый пароль",
-						})}
-					/>
-					{errors.oldPassword && (
-						<p className="error-text">{errors.oldPassword.message}</p>
-					)}
-				</div>
-				<div>
-					<input
-						type="password"
-						placeholder="Новый пароль"
-						{...register("newPassword", {
-							required: "Введите новый пароль",
-							minLength: {
-								value: 6,
-								message: "Минимум 6 символов",
-							},
-						})}
-					/>
-					{errors.newPassword && (
-						<p className="error-text">{errors.newPassword.message}</p>
-					)}
-				</div>
-				<button type="submit">Сменить пароль</button>
-			</form>
-
-			{successMessage && <p className="success-text">{successMessage}</p>}
-			{serverError && <p className="error-text">{serverError}</p>}
-
-			<hr style={{ margin: "20px 0" }} />
-
-			<button onClick={onDeleteAccount} className="danger-button">
-				Удалить аккаунт
-			</button>
-		</div>
+			{showModal && (
+				<ConfirmModal
+					isOpen={showModal}
+					message="Вы уверены, что хотите выйти?"
+					onConfirm={handleConfirm}
+					onCancel={handleCancel}
+				/>
+			)}
+		</>
 	);
 }
