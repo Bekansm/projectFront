@@ -1,23 +1,52 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import "./App.css";
-import { Cities, CityPage } from "./pages/WeatherPage.jsx";
-import Time from "./pages/TimePage.jsx";
-import NotFound from "./pages/NotFound.jsx";
+import "./styles/index.css";
+import {
+	Home,
+	Login,
+	Register,
+	Profile,
+	NotFound,
+	Time,
+	Cities,
+	CityPage,
+} from "./pages/pages.jsx";
+
 import Layout from "./core/Layouts.jsx";
+
+import PrivateRoute from "./services/privateRoutes.jsx";
+
 function App() {
+	const privateRoutes = [
+		{ path: "/weather", element: <Cities /> },
+		{ path: "/weather/:city", element: <CityPage /> },
+		{ path: "/time", element: <Time /> },
+		{ path: "/profile", element: <Profile /> },
+	];
+
+	const publicRoutes = [
+		{ path: "/home", element: <Home /> },
+		{ path: "/login", element: <Login /> },
+		{ path: "/register", element: <Register /> },
+		{ path: "/not-found", element: <NotFound /> },
+	];
+
 	return (
-		<>
-			<Layout>
-				<Routes>
-					<Route path="/weather" element={<Cities />} />
-					<Route path="/weather/:city" element={<CityPage />} />
-					<Route path="/time" element={<Time />} />
-					<Route path="/not-found" element={<NotFound />} />
-					<Route path="/" element={<Navigate to="/time" replace />} />
-					<Route path="*" element={<Navigate to="/not-found" replace />} />
-				</Routes>
-			</Layout>
-		</>
+		<Layout>
+			<Routes>
+				{publicRoutes.map(({ path, element }) => (
+					<Route key={path} path={path} element={element} />
+				))}
+				{privateRoutes.map(({ path, element }) => (
+					<Route
+						key={path}
+						path={path}
+						element={<PrivateRoute>{element}</PrivateRoute>}
+					/>
+				))}
+				<Route path="/" element={<Navigate to="/home" replace />} />
+				<Route path="*" element={<Navigate to="/not-found" replace />} />
+			</Routes>
+		</Layout>
 	);
 }
 

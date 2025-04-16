@@ -1,38 +1,27 @@
 import { useState } from "react";
-import Loader from "../components/Loader.jsx";
+import Loader from "../../components/Loader.jsx";
+import { fetchTime } from "../../services/api/api.jsx";
 
 export default function Time() {
-	const [city, setCity] = useState(""); // Заполняем из URL или оставляем пустым
+	const [city, setCity] = useState("");
 	const [time, setTime] = useState(null);
 	const [error, setError] = useState("");
 	const [isLoading, setLoading] = useState(false);
 
-	async function fetchWeather(cityName) {
+	const handleFetchTime = async () => {
 		setTime(null);
 		setError("");
 		setLoading(true);
 
-		if (!cityName.trim()) {
-			setError("Введите название города!");
-			setLoading(false);
-			return;
-		}
-
 		try {
-			const response = await fetch(`http://localhost:4040/time/${cityName}`);
-			const data = await response.json();
-
-			if (!response.ok) {
-				throw new Error(data.error || "Ошибка при получении данных");
-			}
-
-			setTime(data.time);
+			const result = await fetchTime(city);
+			setTime(result);
 		} catch (err) {
 			setError(err.message);
 		} finally {
 			setLoading(false);
 		}
-	}
+	};
 
 	return (
 		<div className="wrapper">
@@ -43,7 +32,7 @@ export default function Time() {
 				value={city}
 				onChange={(e) => setCity(e.target.value)}
 			/>
-			<button onClick={() => fetchWeather(city)}>Получить время</button>
+			<button onClick={handleFetchTime}>Получить время</button>
 
 			<div style={{ textAlign: "center", marginTop: "50px" }}>
 				{error && <p className="wrapper-text">{error}</p>}

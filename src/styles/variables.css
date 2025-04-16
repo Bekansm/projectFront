@@ -1,0 +1,36 @@
+:root {
+	--bg-color: #000;
+	--primary-color: #121212;
+	--secondary-color: #1f1f1f;
+	--border: #404040;
+	--secondary-color-hover: #1ed760;
+	--text: #b3b3b3;
+	--light: #fff;
+	--green: #1ed760;
+	--blue: #4cb3ff;
+	--white: #fff;
+	--dark-text: #141418;
+	--button-bg: #007bff;
+	--button-text: #ffffff;
+	--button-border: #0056b3;
+	--button-hover-bg: #0056b3;
+	--button-hover-text: #ffffff;
+	--button-active-bg: #004085;
+	--button-active-text: #ffffff;
+}
+
+.light {
+	--bg-color: var(--white) !important;
+	--primary-color: #f4f4f4;
+	--secondary-color: #dfdfdf;
+	--secondary-color-hover: #cecece;
+	--text: var(--dark-text);
+	--light: var(--dark-text);
+	--button-bg: #222;
+	--button-text: #fff;
+	--button-border: #444;
+	--button-hover-bg: #333;
+	--button-hover-text: #ddd;
+	--button-active-bg: #111;
+	--button-active-text: #ccc;
+}
