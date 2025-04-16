@@ -3,9 +3,16 @@ import { useForm } from "react-hook-form";
 import { logout } from "../../redux/slices/authSlice";
 import ConfirmModal from "../../components/ConfirmationModal";
 import { useDispatch } from "react-redux";
+import {
+	getUserProfile,
+	changeUserPassword,
+	deleteUserAccount,
+} from "../../services/api/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const [showModal, setShowModal] = useState(false);
 	const [user, setUser] = useState({ name: "", email: "" });
 	const [serverError, setServerError] = useState("");
@@ -31,21 +38,13 @@ export default function Profile() {
 	const handleCancel = () => {
 		setShowModal(false);
 	};
+
 	useEffect(() => {
-		// Загрузка данных пользователя с сервера
 		const token = localStorage.getItem("token");
-		fetch("http://localhost:8000/profile", {
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		})
-			.then((res) => res.json())
+
+		getUserProfile(token)
 			.then((data) => {
-				if (data.name && data.email) {
-					setUser({ name: data.name, email: data.email });
-				} else {
-					throw new Error("Ошибка загрузки профиля");
-				}
+				setUser({ name: data.name, email: data.email });
 			})
 			.catch((err) => setServerError(err.message));
 	}, []);
@@ -56,20 +55,7 @@ export default function Profile() {
 		const token = localStorage.getItem("token");
 
 		try {
-			const res = await fetch("http://localhost:8000/auth/change-password", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-				body: JSON.stringify(data),
-			});
-			const result = await res.json();
-
-			if (!res.ok) {
-				throw new Error(result.message || "Ошибка смены пароля");
-			}
-
+			await changeUserPassword(token, data);
 			setSuccessMessage("Пароль успешно обновлён");
 			reset();
 		} catch (err) {
@@ -78,22 +64,14 @@ export default function Profile() {
 	};
 
 	const onDeleteAccount = async () => {
-		try {
-			const res = await fetch("http://localhost:8000/auth/delete", {
-				method: "DELETE",
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
+		const token = localStorage.getItem("token");
 
-			if (!res.ok) {
-				const result = await res.json();
-				throw new Error(result.message || "Ошибка при удалении аккаунта");
-			}
+		try {
+			await deleteUserAccount(token);
+			dispatch(logout());
 		} catch (err) {
 			setServerError(err.message);
 		}
-		dispatch(logout());
 	};
 
 	return (

@@ -1,11 +1,11 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL;
-console.log("API URL:", API_BASE_URL);
 
 export async function fetchWeather(cityName) {
 	if (!cityName.trim()) {
 		throw new Error("Введите название города!");
 	}
-
+	console.log(API_BASE_URL);
+	console.log(cityName);
 	const response = await fetch(`${API_BASE_URL}/weather/${cityName}`);
 
 	const data = await response.json();
