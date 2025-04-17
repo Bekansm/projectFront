@@ -4,4 +4,5 @@ export { default as Register } from "./public/auth/Register.jsx";
 export { default as Profile } from "./private/Profile.jsx";
 export { default as NotFound } from "./NotFound.jsx";
 export { default as Time } from "./private/TimePage.jsx";
+export { default as EditProfile} from "./private/EditProfile.jsx"
 export { Cities, CityPage } from "./private/WeatherPage.jsx";

@@ -11,7 +11,7 @@ export default function Header() {
 	const [showModal, setShowModal] = useState(false);
 	const dispatch = useDispatch();
 	const isLightTheme = useSelector((state) => state.theme.isLightTheme);
-	const token = useSelector((state) => state.auth.token); // Токен из Redux
+	const token = useSelector((state) => state.auth.token); 
 
 	const handleLogoutClick = (e) => {
 		e.preventDefault();

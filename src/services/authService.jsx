@@ -15,14 +15,14 @@ export function InputField({
 				placeholder={placeholder}
 				{...register(name, validation)}
 			/>
-			{errors[name] && <p className="error-text">{errors[name].message}</p>}
+			{errors[name] && <p className="wrapper-text">{errors[name].message}</p>}
 		</div>
 	);
 }
 
 export function ServerError({ error }) {
 	if (!error) return null;
-	return <p className="error-text">{error}</p>;
+	return <p className="wrapper-text">{error}</p>;
 }
 
 export async function handleFormSubmit(

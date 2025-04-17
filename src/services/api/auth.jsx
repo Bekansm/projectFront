@@ -44,7 +44,7 @@ export async function registerUser({ name, email, password }) {
 }
 
 export async function getUserProfile(token) {
-	const response = await fetch(`${API_BASE_URL}/profile`, {
+	const response = await fetch(`${API_BASE_URL}/user/me`, {
 		headers: {
 			Authorization: `Bearer ${token}`,
 		},
@@ -59,27 +59,53 @@ export async function getUserProfile(token) {
 	return data;
 }
 
-export async function changeUserPassword(token, passwordData) {
-	const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${token}`,
-		},
-		body: JSON.stringify(passwordData),
-	});
+export async function updateUsername(token, username) {
+	try {
+		const response = await fetch(`${API_BASE_URL}/user/me/name`, {
+			method: "PATCH",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({ username }),
+		});
 
-	const result = await response.json();
+		const result = await response.json();
 
-	if (!response.ok) {
-		throw new Error(result.message || "Ошибка смены пароля");
+		if (!response.ok) {
+			throw new Error(result.message || "Ошибка при обновлении имени");
+		}
+
+		return result;
+	} catch (error) {
+		throw error;
 	}
-
-	return result;
 }
 
+export async function updateEmail(token, email) {
+	try {
+		const response = await fetch(`${API_BASE_URL}/user/me/email`, {
+			method: "PATCH",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({ email }),
+		});
+
+		const result = await response.json();
+
+		if (!response.ok) {
+			throw new Error(result.message || "Ошибка при обновлении email");
+		}
+
+		return result;
+	} catch (error) {
+		throw error;
+	}
+}
 export async function deleteUserAccount(token) {
-	const response = await fetch(`${API_BASE_URL}/auth/delete`, {
+	const response = await fetch(`${API_BASE_URL}/user/me/delete`, {
 		method: "DELETE",
 		headers: {
 			Authorization: `Bearer ${token}`,

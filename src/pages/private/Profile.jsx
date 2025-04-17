@@ -5,12 +5,12 @@ import ConfirmModal from "../../components/ConfirmationModal";
 import { useDispatch } from "react-redux";
 import {
 	getUserProfile,
-	changeUserPassword,
 	deleteUserAccount,
 } from "../../services/api/auth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Profile() {
+
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const [showModal, setShowModal] = useState(false);
@@ -24,7 +24,7 @@ export default function Profile() {
 		reset,
 	} = useForm();
 
-	const handleDeleteClick = (e) => {
+	const handleClick = (e) => {
 		e.preventDefault();
 		setShowModal(true);
 	};
@@ -39,29 +39,19 @@ export default function Profile() {
 		setShowModal(false);
 	};
 
+
+	
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 
 		getUserProfile(token)
 			.then((data) => {
-				setUser({ name: data.name, email: data.email });
+				setUser({ name: data.username, email: data.email });
 			})
 			.catch((err) => setServerError(err.message));
 	}, []);
 
-	const onChangePassword = async (data) => {
-		setServerError("");
-		setSuccessMessage("");
-		const token = localStorage.getItem("token");
-
-		try {
-			await changeUserPassword(token, data);
-			setSuccessMessage("Пароль успешно обновлён");
-			reset();
-		} catch (err) {
-			setServerError(err.message);
-		}
-	};
+	
 
 	const onDeleteAccount = async () => {
 		const token = localStorage.getItem("token");
@@ -88,51 +78,17 @@ export default function Profile() {
 					</p>
 				</div>
 
-				<h3 className="wrapper-text">Сменить пароль</h3>
-				<form onSubmit={handleSubmit(onChangePassword)} className="auth-form">
-					<div>
-						<input
-							type="password"
-							placeholder="Старый пароль"
-							{...register("oldPassword", {
-								required: "Введите старый пароль",
-							})}
-						/>
-						{errors.oldPassword && (
-							<p className="wrapper-text">{errors.oldPassword.message}</p>
-						)}
-					</div>
-					<div>
-						<input
-							type="password"
-							placeholder="Новый пароль"
-							{...register("newPassword", {
-								required: "Введите новый пароль",
-								minLength: {
-									value: 6,
-									message: "Минимум 6 символов",
-								},
-							})}
-						/>
-						{errors.newPassword && (
-							<p className="wrapper-text">{errors.newPassword.message}</p>
-						)}
-					</div>
-					<button type="submit">Сменить пароль</button>
-				</form>
-
-				{successMessage && <p className="wrapper-text">{successMessage}</p>}
-				{serverError && <p className="wrapper-text">{serverError}</p>}
-
-				<hr style={{ margin: "20px 0" }} />
-
-				<button onClick={handleDeleteClick}>Удалить аккаунт</button>
+			
+				<Link to="/edit-profile">
+							<button>Изменить аккаунт</button>
+						</Link>
+				<button onClick={handleClick}>Удалить аккаунт</button>
 			</div>
 
 			{showModal && (
 				<ConfirmModal
 					isOpen={showModal}
-					message="Вы уверены, что хотите выйти?"
+					message="Вы уверены, что хотите удалить свой аккаунт?"
 					onConfirm={handleConfirm}
 					onCancel={handleCancel}
 				/>
