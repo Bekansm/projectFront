@@ -1,18 +1,33 @@
-import { cities } from "../../utils/consts.jsx";
+
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Loader from "../../components/Loader.jsx";
-import { fetchWeather } from "../../services/api/api.jsx";
+import { fetchWeather, getFavoriteLocations} from "../../services/api/api.jsx";
 import ConfirmModal from "../../components/ConfirmationModal.jsx";
 
 const Cities = () => {
-	const [showModal, setShowModal] = useState(false);
+	const [cities, setCities] = useState([]);
 	const [selectedCity, setSelectedCity] = useState(null);
+	const [showModal, setShowModal] = useState(false);
+	const [error, setError] = useState("");
 	const navigate = useNavigate();
 
-	const handleCityClick = (cityName, e) => {
-		e.preventDefault(); // Предотвращаем переход по ссылке
-		setSelectedCity(cityName);
+	useEffect(() => {
+		const fetchCities = async () => {
+			try {
+				const locations = await getFavoriteLocations();
+				setCities(locations);
+			} catch (err) {
+				setError(err.message);
+			}
+		};
+
+		fetchCities();
+	}, []);
+
+	const handleCityClick = (city, e) => {
+		e.preventDefault();
+		setSelectedCity(city);
 		setShowModal(true);
 	};
 
@@ -22,22 +37,26 @@ const Cities = () => {
 	};
 
 	const handleCancel = () => {
-		setShowModal(false);
 		setSelectedCity(null);
+		setShowModal(false);
 	};
+
 
 	return (
 		<div className="wrapper">
-			<h2 className="wrapper-text">Выберите город, чтобы узнать погоду</h2>
+			<h2 className="wrapper-text">Просмотр Погоды</h2>
+
+		
+
 			<ul>
-				{cities.map((city, index) => (
+				{cities.map((loc, index) => (
 					<li key={index} style={{ fontWeight: "bold" }}>
 						<Link
-							to={`/weather/${city}`}
+							to={`/weather/${loc.city}`}
 							className="wrapper-link"
-							onClick={(e) => handleCityClick(city, e)}
+							onClick={(e) => handleCityClick(loc.city, e)}
 						>
-							{city}
+							{loc.city}
 						</Link>
 					</li>
 				))}
@@ -45,13 +64,14 @@ const Cities = () => {
 
 			<ConfirmModal
 				isOpen={showModal}
-				message={`Вы уверены, что хотите узнать погоду в городе ${selectedCity}?`}
+				message={`Показать погоду в городе ${selectedCity}?`}
 				onConfirm={handleConfirm}
 				onCancel={handleCancel}
 			/>
 		</div>
 	);
 };
+
 
 const CityPage = () => {
 	const { city } = useParams();

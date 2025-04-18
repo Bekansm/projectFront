@@ -1,28 +1,20 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { logout } from "../../redux/slices/authSlice";
-import ConfirmModal from "../../components/ConfirmationModal";
-import { useDispatch } from "react-redux";
+import { logout } from "../../../redux/slices/authSlice";
+import ConfirmModal from "../../../components/ConfirmationModal";
+import { useSelector, useDispatch } from "react-redux";
 import {
 	getUserProfile,
 	deleteUserAccount,
-} from "../../services/api/auth";
+} from "../../../services/api/auth";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Profile() {
-
+	const token = useSelector((state) => state.auth.token);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const [showModal, setShowModal] = useState(false);
 	const [user, setUser] = useState({ name: "", email: "" });
-	const [serverError, setServerError] = useState("");
-	const [successMessage, setSuccessMessage] = useState("");
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-		reset,
-	} = useForm();
+
 
 	const handleClick = (e) => {
 		e.preventDefault();
@@ -30,7 +22,7 @@ export default function Profile() {
 	};
 
 	const handleConfirm = () => {
-		onDeleteAccount();
+		onDeleteAccount(token);
 		setShowModal(false);
 		navigate("/");
 	};
@@ -42,8 +34,6 @@ export default function Profile() {
 
 	
 	useEffect(() => {
-		const token = localStorage.getItem("token");
-
 		getUserProfile(token)
 			.then((data) => {
 				setUser({ name: data.username, email: data.email });
@@ -53,9 +43,7 @@ export default function Profile() {
 
 	
 
-	const onDeleteAccount = async () => {
-		const token = localStorage.getItem("token");
-
+	const onDeleteAccount = async (token) => {
 		try {
 			await deleteUserAccount(token);
 			dispatch(logout());
@@ -80,9 +68,12 @@ export default function Profile() {
 
 			
 				<Link to="/edit-profile">
-							<button>Изменить аккаунт</button>
+							<button className="profile-button">Изменить аккаунт</button>
 						</Link>
-				<button onClick={handleClick}>Удалить аккаунт</button>
+						<Link to="/favorite-locations">
+							<button className="profile-button">Избранные города</button>
+						</Link>
+				<button className="profile-button" onClick={handleClick}>Удалить аккаунт</button>
 			</div>
 
 			{showModal && (

@@ -8,6 +8,7 @@ import {
 	Cities,
 	CityPage,
 	EditProfile,
+	FavoriteLocations,
 } from "../pages/pages.jsx";
 
 const privateRoutes = [
@@ -16,6 +17,7 @@ const privateRoutes = [
 	{ path: "/time", element: <Time /> },
 	{ path: "/profile", element: <Profile /> },
 	{ path: "/edit-profile", element: <EditProfile /> },
+	{ path: "/favorite-locations", element: <FavoriteLocations />}
 ];
 
 const publicRoutes = [

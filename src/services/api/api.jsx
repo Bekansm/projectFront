@@ -31,3 +31,60 @@ export async function fetchTime(cityName) {
 
 	return data.time;
 }
+
+
+
+//Методы для избранных городов
+
+export async function getFavoriteLocations() {
+	const response = await fetch(`${API_BASE_URL}/favoriteLocation`, {
+		headers: {
+			Authorization: `Bearer ${localStorage.getItem("token")}`,
+		},
+	});
+	const data = await response.json();
+	if (!response.ok) throw new Error(data.message);
+	return data;
+}
+
+export async function addFavoriteLocation(city) {
+	const response = await fetch(`${API_BASE_URL}/favoriteLocation/create`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${localStorage.getItem("token")}`,
+		},
+		body: JSON.stringify({ city }),
+	});
+	const data = await response.json();
+	if (!response.ok) throw new Error(data.message);
+	return data;
+}
+
+export async function updateFavoriteLocation(city) {
+	const response = await fetch(`${API_BASE_URL}/favoriteLocation`, {
+		method: "PATCH",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${localStorage.getItem("token")}`,
+		},
+		body: JSON.stringify({ city }),
+	});
+	const data = await response.json();
+	if (!response.ok) throw new Error(data.message);
+	return data;
+}
+
+export async function deleteFavoriteLocation(city) {
+	const response = await fetch(`${API_BASE_URL}/favoriteLocation`, {
+		method: "DELETE",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${localStorage.getItem("token")}`,
+		},
+		body: JSON.stringify({ city }),
+	});
+	const data = await response.json();
+	if (!response.ok) throw new Error(data.message);
+	return data;
+}

@@ -2,16 +2,13 @@ import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import {  useSelector } from "react-redux";
-
-
 import {
 	getUserProfile,
 	updateUsername,
 	updateEmail,
-} from "../../services/api/auth";
-
-import ConfirmModal from "../../components/ConfirmationModal";
-import { InputField,ServerError } from "../../services/authService";
+} from "../../../services/api/auth";
+import ConfirmModal from "../../../components/ConfirmationModal";
+import { InputField,ServerError } from "../../../services/authService";
 
 
 export default function EditProfile() {
@@ -102,9 +99,9 @@ export default function EditProfile() {
 			
 
 					
-					<button type="submit">Сохранить</button>
+					<button className="profile-button" type="submit">Сохранить</button>
 					<p/>
-					<button onClick={() => navigate(-1)}>Отменить</button>
+					<button className="profile-button" onClick={() => navigate(-1)}>Отменить</button>
 					
 				</form>
 			</div>
