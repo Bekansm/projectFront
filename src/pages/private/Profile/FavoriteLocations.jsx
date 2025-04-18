@@ -12,6 +12,7 @@ export default function FavoriteLocations() {
 	const [cities, setCities] = useState([]);
 	const [selectedCity, setSelectedCity] = useState(null);
 	const [showModal, setShowModal] = useState(false);
+	const [isDelete, setDelete] = useState(false);
 	const [modalType, setModalType] = useState("confirm");
 	const [modalMessage, setModalMessage] = useState("");
 	const [error, setError] = useState("");
@@ -46,33 +47,42 @@ export default function FavoriteLocations() {
 
 	const handleConfirm = async (inputValue) => {
 		setShowModal(false);
-
-		if (modalType === "confirm") {
-			navigate(`/weather/${selectedCity}`);
-		} else if (modalType === "input") {
-			if (!inputValue) return;
+		if (isDelete) {
+			console.log(selectedCity);
 			try {
-				const created = await addFavoriteLocation(inputValue);
-				setCities([...cities, created]);
+				await deleteFavoriteLocation(selectedCity);
+				setCities(cities.filter((loc) => loc.city !== selectedCity));
 			} catch (err) {
 				alert(err.message);
+			}
+		} else {
+			if (modalType === "confirm") {
+				navigate(`/weather/${selectedCity}`);
+			} else if (modalType === "input") {
+				if (!inputValue) return;
+				try {
+					const created = await addFavoriteLocation(inputValue);
+					setCities([...cities, created]);
+				} catch (err) {
+					alert(err.message);
+				}
 			}
 		}
 	};
 
 	const handleCancel = () => {
 		setSelectedCity(null);
+		setDelete(false);
+
 		setShowModal(false);
 	};
 
-	const handleDeleteCity = async (city) => {
-		if (!confirm(`Удалить город "${city}" из избранного?`)) return;
-		try {
-			await deleteFavoriteLocation(city);
-			setCities(cities.filter((loc) => loc.city !== city));
-		} catch (err) {
-			alert(err.message);
-		}
+	const handleDeleteCity = (city) => {
+		setSelectedCity(city);
+		setModalType(null);
+		setModalMessage(`Удалить город ${city} из избранного?`);
+		setDelete(true);
+		setShowModal(true);
 	};
 
 	return (
@@ -88,10 +98,16 @@ export default function FavoriteLocations() {
 			<ul>
 				{cities.map((loc, index) => (
 					<li key={index} className="city-item">
-						<Link className="wrapper-link" onClick={(e) => handleCityClick(loc.city, e)}>
+						<Link
+							className="wrapper-link"
+							onClick={(e) => handleCityClick(loc.city, e)}
+						>
 							{loc.city}
 						</Link>
-						<button id="delete-button" onClick={() => handleDeleteCity(loc.city)}>
+						<button
+							id="delete-button"
+							onClick={() => handleDeleteCity(loc.city)}
+						>
 							x
 						</button>
 					</li>
